@@ -33,7 +33,7 @@ export function TopNav({ userName, userEmail }: TopNavProps) {
         <h1 className="text-xl font-bold text-gray-900 dark:text-white">
           Welcome back, <span className="text-blue-600 dark:text-cyan-400">{displayName}</span>
         </h1>
-        <p className="text-sm text-gray-600 dark:text-gray-400">Ready to learn something new today?</p>
+        {/* <p className="text-sm text-gray-600 dark:text-gray-400">Ready to learn something new today?</p> */}
       </div>
 
       {/* Right Section */}
