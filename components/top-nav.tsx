@@ -31,7 +31,7 @@ export function TopNav({ userName, userEmail }: TopNavProps) {
       {/* Welcome Message */}
       <div className="flex-1 lg:ml-0 ml-16">
         <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-          {/* Welcome back, <span className="text-blue-600 dark:text-cyan-400">{displayName}</span> */}
+          Welcome back, <span className="text-blue-600 dark:text-cyan-400">{displayName}</span>
         </h1>
         {/* <p className="text-sm text-gray-600 dark:text-gray-400">Ready to learn something new today?</p> */}
       </div>
