@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server'
-import openvpn from 'openvpn-client'
+import { openvpn, OpenVPNClient } from 'openvpn-client'
 
 const config = 'config/openvpn.ovpn'
 
-let vpn
+let vpn: OpenVPNClient | undefined
 
 export async function POST(req: Request) {
   const { action } = await req.json()
@@ -11,19 +11,32 @@ export async function POST(req: Request) {
   if (action === 'connect') {
     try {
       vpn = openvpn(config)
-      await vpn.connect()
+      if (vpn) {
+        await vpn.connect()
+      } else {
+        throw new Error('Failed to initialize VPN client')
+      }
       return NextResponse.json({ success: true, message: 'VPN connected' })
     } catch (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      const errorMessage = typeof error === 'object' && error !== null && 'message' in error
+        ? (error as { message: string }).message
+        : String(error)
+      return NextResponse.json({ error: errorMessage }, { status: 500 })
     }
   }
 
   if (action === 'disconnect') {
     try {
+      if (!vpn) {
+        return NextResponse.json({ error: 'VPN client is not initialized' }, { status: 400 })
+      }
       await vpn.disconnect()
       return NextResponse.json({ success: true, message: 'VPN disconnected' })
     } catch (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      const errorMessage = typeof error === 'object' && error !== null && 'message' in error
+        ? (error as { message: string }).message
+        : String(error)
+      return NextResponse.json({ error: errorMessage }, { status: 500 })
     }
   }
 
@@ -33,4 +46,13 @@ export async function POST(req: Request) {
 export async function GET() {
   const isConnected = vpn && vpn.isConnected()
   return NextResponse.json({ isConnected })
+}
+
+declare module 'openvpn-client' {
+  interface OpenVPNClient {
+    connect(): Promise<void>;
+    disconnect(): Promise<void>;
+    isConnected(): boolean;
+  }
+  function openvpn(config: string): OpenVPNClient;
 }
